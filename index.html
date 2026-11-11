@@ -1,1 +1,637 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>13 МСО — Премиум Портал</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* =========================================
+   1. ПЕРЕМЕННЫЕ И СБРОС
+   ========================================= */
+:root {
+  --bg: #f4f7fb; --surface: #ffffff; --surface-2: #f8fafc;
+  --text: #0f172a; --muted: #64748b; --line: #e2e8f0;
+  --primary: #4f46e5; --primary-hover: #4338ca; --primary-soft: #e0e7ff;
+  --green: #10b981; --green-soft: #d1fae5;
+  --red: #ef4444; --red-soft: #fee2e2;
+  --amber: #f59e0b; --amber-soft: #fef3c7;
+  --radius: 18px; --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05);
+  --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.1); --shadow-lg: 0 20px 40px -10px rgba(0,0,0,0.15);
+}
+[data-theme="dark"] {
+  --bg: #0b1120; --surface: #1e293b; --surface-2: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --line: #334155;
+  --primary: #6366f1; --primary-hover: #4f46e5; --primary-soft: #312e81;
+  --green: #34d399; --green-soft: #064e3b;
+  --red: #f87171; --red-soft: #7f1d1d;
+  --amber: #fbbf24; --amber-soft: #78350f;
+}
+* { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+body { margin: 0; background: var(--bg); color: var(--text); transition: background 0.4s, color 0.4s; font-size: 14px; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+button { cursor: pointer; border: none; background: none; font: inherit; color: inherit; }
+input, select, textarea { font: inherit; outline: none; }
+.hidden { display: none !important; }
 
+/* =========================================
+   2. АНИМАЦИИ
+   ========================================= */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+
+.animate-fade { animation: fadeIn 0.3s ease forwards; }
+.animate-up { animation: slideUp 0.4s ease forwards; }
+.animate-pop { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+/* =========================================
+   3. ЭКРАН АВТОРИЗАЦИИ
+   ========================================= */
+.auth-screen { min-height: 100vh; display: flex; flex-direction: column; background: linear-gradient(135deg, #0f172a, #312e81); padding: 20px; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.auth-bg-shapes { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 0; overflow: hidden; }
+.auth-shape { position: absolute; background: rgba(255,255,255,0.05); border-radius: 50%; backdrop-filter: blur(10px); }
+.auth-shape.s1 { width: 300px; height: 300px; top: -100px; left: -100px; animation: float 6s infinite ease-in-out; }
+.auth-shape.s2 { width: 200px; height: 200px; bottom: -50px; right: -50px; animation: float 8s infinite ease-in-out reverse; }
+.auth-box { width: 100%; max-width: 400px; background: var(--surface); padding: 36px 28px; border-radius: 28px; box-shadow: var(--shadow-lg); position: relative; z-index: 1; animation: popIn 0.5s ease; }
+.auth-logo { text-align: center; margin-bottom: 28px; }
+.auth-logo h1 { font-size: 34px; margin: 0 0 8px; letter-spacing: -1px; font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--primary-hover)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.auth-logo p { margin: 0; color: var(--muted); font-size: 14px; font-weight: 500; }
+.input-group { margin-bottom: 16px; }
+.input-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 8px; margin-left: 4px; }
+.input { width: 100%; padding: 16px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface-2); color: var(--text); font-size: 15px; font-weight: 500; transition: all 0.3s; }
+.input:focus { border-color: var(--primary); background: var(--surface); box-shadow: 0 0 0 4px var(--primary-soft); }
+.btn { padding: 16px 24px; border-radius: 14px; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; transition: all 0.2s; }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: white; box-shadow: 0 8px 20px -6px var(--primary); }
+.btn-primary:hover { box-shadow: 0 12px 25px -6px var(--primary); }
+.btn-outline { border: 2px solid var(--line); background: var(--surface); color: var(--text); }
+.btn-outline:hover { background: var(--surface-2); }
+.btn-danger { background: var(--red); color: white; }
+.btn-sm { padding: 10px 16px; font-size: 13px; width: auto; border-radius: 10px; }
+.btn-icon { padding: 12px; border-radius: 12px; display: grid; place-items: center; }
+
+/* =========================================
+   4. ОСНОВНОЙ ИНТЕРФЕЙС
+   ========================================= */
+.app { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+.sidebar { background: var(--surface); border-right: 1px solid var(--line); padding: 24px 16px; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; z-index: 10; transition: background 0.4s; }
+.sidebar-brand { display: flex; align-items: center; gap: 12px; padding: 0 8px 24px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+.brand-icon { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: white; display: grid; place-items: center; font-weight: 900; font-size: 18px; box-shadow: 0 4px 12px var(--primary-soft); }
+.brand-text h2 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+.brand-text p { margin: 2px 0 0; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.nav-list { display: flex; flex-direction: column; gap: 4px; }
+.nav-btn { display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px 16px; border-radius: 12px; color: var(--muted); font-weight: 600; font-size: 14px; transition: all 0.2s; text-align: left; }
+.nav-btn:hover { background: var(--surface-2); color: var(--text); }
+.nav-btn.active { background: var(--primary-soft); color: var(--primary); font-weight: 700; }
+.nav-btn i { font-style: normal; font-size: 20px; }
+.sidebar-bottom { margin-top: auto; padding-top: 24px; border-top: 1px solid var(--line); }
+.user-card { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 14px; background: var(--surface-2); transition: all 0.2s; }
+.user-card:hover { background: var(--line); }
+.user-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--primary); color: white; display: grid; place-items: center; font-weight: 800; font-size: 16px; text-transform: uppercase; box-shadow: 0 4px 10px var(--primary-soft); }
+.user-info h4 { margin: 0; font-size: 14px; font-weight: 700; }
+.user-info p { margin: 2px 0 0; font-size: 11px; color: var(--muted); font-weight: 500; }
+
+/* =========================================
+   5. КОНТЕНТ И КАРТОЧКИ
+   ========================================= */
+.main { display: flex; flex-direction: column; height: 100vh; overflow-y: auto; background: var(--bg); }
+.content { padding: 40px; max-width: 1200px; margin: 0 auto; width: 100%; animation: fadeIn 0.4s ease; }
+.header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px; }
+.header-title h1 { margin: 0; font-size: 32px; letter-spacing: -1px; font-weight: 900; }
+.header-title p { margin: 6px 0 0; color: var(--muted); font-size: 14px; font-weight: 500; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 24px; transition: all 0.3s; }
+.card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.card-title { font-size: 18px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+.grid-dashboard { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-sm); }
+.stat-icon { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; font-size: 24px; }
+.stat-icon.blue { background: var(--primary-soft); color: var(--primary); }
+.stat-icon.green { background: var(--green-soft); color: var(--green); }
+.stat-icon.amber { background: var(--amber-soft); color: var(--amber); }
+.stat-value { font-size: 28px; font-weight: 900; letter-spacing: -1px; line-height: 1; }
+.stat-label { font-size: 13px; color: var(--muted); font-weight: 600; }
+
+.list-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); transition: all 0.2s; }
+.list-item:last-child { border-bottom: none; padding-bottom: 0; }
+.list-item:hover { background: var(--surface-2); border-radius: 12px; padding-left: 12px; padding-right: 12px; margin: 0 -12px; }
+.list-item-info h4 { margin: 0 0 6px; font-size: 15px; font-weight: 700; }
+.list-item-info p { margin: 0; font-size: 13px; color: var(--muted); font-weight: 500; }
+.badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+.badge-blue { background: var(--primary-soft); color: var(--primary); }
+.badge-red { background: var(--red-soft); color: var(--red); }
+.badge-green { background: var(--green-soft); color: var(--green); }
+.badge-amber { background: var(--amber-soft); color: var(--amber); }
+
+/* =========================================
+   6. ЧАТ
+   ========================================= */
+.chat-container { display: flex; flex-direction: column; height: calc(100vh - 160px); background: var(--surface); border-radius: var(--radius); border: 1px solid var(--line); overflow: hidden; box-shadow: var(--shadow-sm); }
+.chat-messages { flex: 1; padding: 24px; overflow-y: auto; background: var(--surface-2); display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth; }
+.msg { display: flex; flex-direction: column; max-width: 75%; animation: slideUp 0.3s ease; }
+.msg.mine { align-self: flex-end; align-items: flex-end; }
+.msg.other { align-self: flex-start; align-items: flex-start; }
+.msg-author { font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 6px; margin-left: 4px; }
+.msg-bubble { padding: 14px 18px; border-radius: 20px; font-size: 15px; line-height: 1.5; word-wrap: break-word; box-shadow: var(--shadow-sm); }
+.msg.mine .msg-bubble { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: white; border-bottom-right-radius: 4px; }
+.msg.other .msg-bubble { background: var(--surface); color: var(--text); border-bottom-left-radius: 4px; border: 1px solid var(--line); }
+.chat-input-area { display: flex; gap: 12px; padding: 16px 24px; background: var(--surface); border-top: 1px solid var(--line); }
+.chat-input-area input { flex: 1; padding: 16px; border-radius: 16px; border: 2px solid var(--line); background: var(--surface-2); font-size: 15px; color: var(--text); transition: all 0.3s; }
+.chat-input-area input:focus { border-color: var(--primary); background: var(--surface); box-shadow: 0 0 0 4px var(--primary-soft); }
+.chat-input-area button { width: 56px; border-radius: 16px; background: var(--primary); color: white; font-size: 24px; display: grid; place-items: center; transition: all 0.2s; }
+.chat-input-area button:hover { background: var(--primary-hover); transform: scale(1.05); }
+
+/* =========================================
+   7. МОДАЛЬНЫЕ ОКНА И УВЕДОМЛЕНИЯ
+   ========================================= */
+.modal-bg { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(8px); padding: 20px; }
+.modal-bg.open { opacity: 1; pointer-events: all; }
+.modal { background: var(--surface); width: 100%; max-width: 500px; border-radius: 24px; padding: 32px; transform: translateY(40px) scale(0.95); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+.modal-bg.open .modal { transform: translateY(0) scale(1); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.modal-header h3 { margin: 0; font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
+.close-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--surface-2); font-size: 20px; display: grid; place-items: center; color: var(--muted); transition: all 0.2s; }
+.close-btn:hover { background: var(--red-soft); color: var(--red); transform: rotate(90deg); }
+#toasts { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); z-index: 2000; display: flex; flex-direction: column; gap: 12px; width: 90%; max-width: 400px; pointer-events: none; }
+.toast { background: var(--text); color: var(--surface); padding: 16px 24px; border-radius: 16px; font-size: 14px; font-weight: 600; text-align: center; box-shadow: var(--shadow-lg); animation: slideDown 0.3s forwards; }
+
+/* =========================================
+   8. МОБИЛЬНАЯ АДАПТАЦИЯ
+   ========================================= */
+.mobile-nav { display: none; }
+@media (max-width: 1024px) {
+  .grid-dashboard { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .app { display: block; }
+  .sidebar { display: none; }
+  .main { height: auto; padding-bottom: 90px; }
+  .content { padding: 24px 16px; }
+  .header { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .header-title h1 { font-size: 26px; }
+  .stat-grid { grid-template-columns: 1fr; }
+  .mobile-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--line); justify-content: space-around; padding: 12px 5px 25px; z-index: 100; overflow-x: auto; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+  .m-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--muted); font-size: 11px; font-weight: 700; min-width: 65px; transition: all 0.2s; }
+  .m-nav-btn.active { color: var(--primary); transform: translateY(-2px); }
+  .m-nav-btn i { font-size: 24px; font-style: normal; }
+  .chat-container { height: calc(100vh - 220px); }
+  .msg { max-width: 88%; }
+}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+<div id="toasts"></div>
+<div class="modal-bg" id="modal-bg"><div class="modal" id="modal-content"></div></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDMiUy0QORfOk3kFOnEnrMIo4qjUQw4Fd8",
+  authDomain: "mso--portal.firebaseapp.com",
+  projectId: "mso--portal",
+  storageBucket: "mso--portal.firebasestorage.app",
+  messagingSenderId: "462160498859",
+  appId: "1:462160498859:web:a96d13def622d1839927ee",
+  measurementId: "G-0PVT7L041R"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let state = null;
+let user = null;
+let profile = null;
+let view = 'dashboard';
+let unsub = null;
+
+const $ = s => document.querySelector(s);
+const uid = p => `${p}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,6)}`;
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const toast = (msg, type='ok') => {
+  const el = document.createElement('div');
+  el.className = 'toast'; 
+  if(type === 'error') el.style.background = 'var(--red)';
+  el.textContent = msg;
+  $('#toasts').append(el);
+  setTimeout(() => el.remove(), 3500);
+};
+const fmtDate = d => d ? new Date(d).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }) : '—';
+
+function openModal(html) { $('#modal-content').innerHTML = html; $('#modal-bg').classList.add('open'); }
+function closeModal() { $('#modal-bg').classList.remove('open'); }
+window.closeModal = closeModal;
+
+const getInitState = () => ({
+  version: 7, config: { theme: 'light', className: '13 МСО' },
+  accounts: [], schedule: [], homework: [], invitations: [], chat: []
+});
+
+function initDB() {
+  if(unsub) unsub();
+  unsub = onSnapshot(doc(db, 'portal', 'main'), (snap) => {
+    if (snap.exists()) {
+      state = snap.data();
+      if (state.config?.theme) document.documentElement.setAttribute('data-theme', state.config.theme);
+      profile = state.accounts.find(a => a.id === user.uid);
+      
+      if (!profile && state.accounts.length === 0) {
+        profile = { id: user.uid, name: 'Руслан', email: user.email, role: 'admin', status: 'active' };
+        state.accounts.push(profile);
+        setDoc(doc(db, 'portal', 'main'), state);
+      }
+      if (!profile && state.accounts.length > 0) {
+        toast('Аккаунт удален администратором', 'error'); signOut(auth); return;
+      }
+      renderApp();
+    } else {
+      state = getInitState();
+      setDoc(doc(db, 'portal', 'main'), state);
+    }
+  });
+}
+const save = () => { if(state) setDoc(doc(db, 'portal', 'main'), state); };
+
+function renderAuth(mode = 'login') {
+  if (mode === 'login') {
+    $('#app').innerHTML = `
+      <div class="auth-screen">
+        <div class="auth-bg-shapes"><div class="auth-shape s1"></div><div class="auth-shape s2"></div></div>
+        <div class="auth-box">
+          <div class="auth-logo"><h1>13 МСО</h1><p>Вход в учебный портал</p></div>
+          <div class="input-group"><label>Email</label><input type="email" id="log-email" class="input" placeholder="example@mail.ru"></div>
+          <div class="input-group"><label>Пароль</label><input type="password" id="log-pass" class="input" placeholder="••••••••"></div>
+          <button class="btn btn-primary" onclick="window.doLogin()">Войти в систему</button>
+          <button class="btn btn-outline" style="margin-top:16px" onclick="window.renderAuth('reg')">Регистрация по коду</button>
+        </div>
+      </div>`;
+  } else {
+    $('#app').innerHTML = `
+      <div class="auth-screen">
+        <div class="auth-bg-shapes"><div class="auth-shape s1"></div><div class="auth-shape s2"></div></div>
+        <div class="auth-box">
+          <div class="auth-logo"><h1>Регистрация</h1><p>Создание нового аккаунта</p></div>
+          <div class="input-group"><label>Ваше имя</label><input type="text" id="reg-name" class="input" placeholder="Иван Иванов"></div>
+          <div class="input-group"><label>Email</label><input type="email" id="reg-email" class="input" placeholder="example@mail.ru"></div>
+          <div class="input-group"><label>Код приглашения (если есть)</label><input type="text" id="reg-code" class="input" placeholder="MSO-XXXX" style="text-transform:uppercase"></div>
+          <div class="input-group"><label>Пароль (мин. 6 символов)</label><input type="password" id="reg-pass" class="input" placeholder="••••••••"></div>
+          <button class="btn btn-primary" onclick="window.doRegister()">Создать аккаунт</button>
+          <button class="btn btn-outline" style="margin-top:16px" onclick="window.renderAuth('login')">Назад ко входу</button>
+        </div>
+      </div>`;
+  }
+}
+window.renderAuth = renderAuth;
+
+window.doLogin = async () => {
+  const email = $('#log-email').value.trim(); const pass = $('#log-pass').value;
+  if(!email || !pass) return toast('Заполните все поля', 'error');
+  try { await signInWithEmailAndPassword(auth, email, pass); } catch (e) { toast('Неверный email или пароль', 'error'); }
+};
+
+window.doRegister = async () => {
+  const name = $('#reg-name').value.trim(); const email = $('#reg-email').value.trim();
+  const code = $('#reg-code').value.trim().toUpperCase(); const pass = $('#reg-pass').value;
+  if (!name || !email || !pass) return toast('Заполните все поля', 'error');
+  if(pass.length < 6) return toast('Пароль должен быть от 6 символов', 'error');
+  
+  const isFirst = state.accounts.length === 0;
+  let role = 'admin';
+  if (!isFirst) {
+    const inv = state.invitations.find(i => i.code === code && !i.used);
+    if (!inv) return toast('Неверный или использованный код', 'error');
+    role = inv.role;
+    inv.used = true;
+  }
+
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    state.accounts.push({ id: cred.user.uid, name, email, role, status: 'active' });
+    save(); toast('Аккаунт создан!');
+  } catch (e) { toast('Ошибка: ' + e.message, 'error'); }
+};
+
+function renderApp() {
+  if (!user || !state || !profile) return renderAuth();
+  const isAdmin = profile.role === 'admin';
+  let content = '';
+
+  if (view === 'dashboard') {
+    content = `
+      <div class="header">
+        <div class="header-title"><h1>Привет, ${esc(profile.name)}!</h1><p>Добро пожаловать в портал группы 13 МСО</p></div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon blue">✓</div>
+          <div class="stat-value">${state.homework.filter(h=>!h.done).length}</div>
+          <div class="stat-label">Активных заданий</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">▦</div>
+          <div class="stat-value">${state.schedule.length}</div>
+          <div class="stat-label">Занятий в расписании</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon amber">♙</div>
+          <div class="stat-value">${state.accounts.length}</div>
+          <div class="stat-label">Участников группы</div>
+        </div>
+      </div>
+      <div class="grid-dashboard">
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Ближайшие дедлайны</h2></div>
+          ${state.homework.filter(h => !h.done).length === 0 ? '<p style="color:var(--muted); text-align:center; padding:20px;">Все задания выполнены! 🎉</p>' : 
+            state.homework.filter(h => !h.done).sort((a,b)=>a.dueDate.localeCompare(b.dueDate)).slice(0,5).map(h => `
+            <div class="list-item">
+              <div class="list-item-info">
+                <h4>${esc(h.title)}</h4>
+                <p>${esc(h.subject)} · до ${fmtDate(h.dueDate)}</p>
+              </div>
+              <span class="badge ${h.priority === 'high' ? 'badge-red' : 'badge-blue'}">${h.priority === 'high' ? 'Важно' : 'Обычное'}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div style="display:flex; flex-direction:column; gap:24px;">
+          <div class="card" style="background:linear-gradient(135deg, var(--primary), var(--primary-hover)); color:white; cursor:pointer; border:none;" onclick="window.exportICS()">
+            <h3 style="margin:0 0 8px; font-size:20px; font-weight:800;">📅 В Календарь</h3>
+            <p style="margin:0; opacity:0.9; font-size:13px;">Скачать напоминания о дедлайнах</p>
+          </div>
+          <div class="card" style="cursor:pointer;" onclick="window.reqNotif()">
+            <h3 style="margin:0 0 8px; font-size:20px; font-weight:800; color:var(--text);">🔔 Уведомления</h3>
+            <p style="margin:0; color:var(--muted); font-size:13px;">Разрешить push-уведомления</p>
+          </div>
+        </div>
+      </div>
+    `;
+  } 
+  else if (view === 'schedule') {
+    content = `
+      <div class="header">
+        <div class="header-title"><h1>Расписание</h1><p>Учебный график группы</p></div>
+        ${isAdmin ? '<button class="btn btn-primary btn-sm" onclick="window.addScheduleModal()">＋ Добавить</button>' : ''}
+      </div>
+      <div class="card">
+        ${state.schedule.length === 0 ? '<p style="color:var(--muted); text-align:center; padding:20px;">Занятий пока нет</p>' : 
+          state.schedule.sort((a,b)=>a.date.localeCompare(b.date)).map(s => `
+          <div class="list-item">
+            <div class="list-item-info">
+              <h4>${esc(s.subject)}</h4>
+              <p>${fmtDate(s.date)} · ${esc(s.time)} ${s.room ? '· ауд. ' + esc(s.room) : ''}</p>
+            </div>
+            ${isAdmin ? `<button class="btn btn-danger btn-sm" onclick="window.delSchedule('${s.id}')">Удалить</button>` : '<span class="badge badge-blue">Занятие</span>'}
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+  else if (view === 'homework') {
+    content = `
+      <div class="header">
+        <div class="header-title"><h1>Домашние задания</h1><p>Список всех задач и дедлайнов</p></div>
+        ${isAdmin ? '<button class="btn btn-primary btn-sm" onclick="window.addHomeworkModal()">＋ Создать</button>' : ''}
+      </div>
+      <div class="card">
+        ${state.homework.length === 0 ? '<p style="color:var(--muted); text-align:center; padding:20px;">Заданий пока нет</p>' : 
+          state.homework.sort((a,b)=>a.dueDate.localeCompare(b.dueDate)).map(h => `
+          <div class="list-item" style="flex-direction:column; align-items:stretch; gap:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div class="list-item-info">
+                <h4 style="font-size:16px;">${esc(h.title)} ${h.done ? '<span class="badge badge-green" style="margin-left:8px;">Выполнено</span>' : ''}</h4>
+                <p style="margin-top:4px;">${esc(h.subject)} · до ${fmtDate(h.dueDate)}</p>
+                ${h.description ? `<p style="margin-top:8px; font-size:13px; color:var(--text); background:var(--surface-2); padding:12px; border-radius:8px;">${esc(h.description)}</p>` : ''}
+              </div>
+              <span class="badge ${h.priority === 'high' ? 'badge-red' : 'badge-blue'}">${h.priority === 'high' ? 'Важно' : 'Обычное'}</span>
+            </div>
+            <div style="display:flex; gap:12px; width:100%;">
+              ${!isAdmin ? `<button class="btn ${h.done ? 'btn-outline' : 'btn-primary'} btn-sm" onclick="window.toggleHw('${h.id}')" style="flex:1;">${h.done ? 'Отменить сдачу' : 'Сдать работу'}</button>` : ''}
+              ${isAdmin ? `<button class="btn btn-danger btn-sm" onclick="window.delHw('${h.id}')" style="flex:1;">Удалить</button>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+  else if (view === 'chat') {
+    const msgs = state.chat || [];
+    content = `
+      <div class="header">
+        <div class="header-title"><h1>Чат группы</h1><p>Общение в реальном времени</p></div>
+      </div>
+      <div class="chat-container">
+        <div class="chat-messages" id="chat-messages">
+          ${msgs.length === 0 ? '<p style="color:var(--muted); text-align:center; margin-top:40px; font-weight:500;">Сообщений пока нет. Напишите первым!</p>' : 
+            msgs.map(m => `
+              <div class="msg ${m.authorId === user.uid ? 'mine' : 'other'}">
+                <div class="msg-author">${esc(m.authorName)}</div>
+                <div class="msg-bubble">${esc(m.text)}</div>
+              </div>
+            `).join('')}
+        </div>
+        <div class="chat-input-area">
+          <input type="text" id="chat-input" placeholder="Написать сообщение..." onkeypress="if(event.key === 'Enter') window.sendChat()">
+          <button onclick="window.sendChat()">➤</button>
+        </div>
+      </div>
+    `;
+    setTimeout(() => { const c = $('#chat-messages'); if(c) c.scrollTop = c.scrollHeight; }, 100);
+  }
+  else if (view === 'admin' && isAdmin) {
+    content = `
+      <div class="header">
+        <div class="header-title"><h1>Участники</h1><p>Управление пользователями и коды</p></div>
+      </div>
+      <div class="card" style="margin-bottom:24px;">
+        <div class="card-header"><h2 class="card-title">Создать приглашение</h2></div>
+        <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">Отправьте этот код Нигар или студенту для регистрации.</p>
+        <div style="display:flex; gap:12px; flex-direction:column;">
+          <button class="btn btn-primary" onclick="window.generateInvite('admin')">🔑 Создать код для Админа</button>
+          <button class="btn btn-outline" onclick="window.generateInvite('student')">👤 Создать код для Студента</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2 class="card-title">Все пользователи</h2></div>
+        ${state.accounts.map(a => `
+          <div class="list-item">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div class="user-avatar" style="width:36px;height:36px;font-size:14px;">${esc(a.name[0])}</div>
+              <div class="list-item-info">
+                <h4>${esc(a.name)}</h4>
+                <p>${esc(a.email)}</p>
+              </div>
+            </div>
+            <span class="badge ${a.role === 'admin' ? 'badge-blue' : 'badge-green'}">${a.role === 'admin' ? 'Админ' : 'Студент'}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+  else if (view === 'settings') {
+    content = `
+      <div class="header">
+        <div class="header-title"><h1>Настройки</h1><p>Персонализация и профиль</p></div>
+      </div>
+      <div class="card">
+        <div class="list-item">
+          <div class="list-item-info">
+            <h4>Тёмная тема</h4>
+            <p>Переключить оформление интерфейса</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="window.toggleTheme()">Переключить</button>
+        </div>
+        <div class="list-item">
+          <div class="list-item-info">
+            <h4>Мой аккаунт</h4>
+            <p>${esc(profile.email)}</p>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="window.doLogout()">Выйти</button>
+        </div>
+      </div>
+    `;
+  }
+
+  const navItems = [
+    { id: 'dashboard', icon: '⌂', label: 'Главная' },
+    { id: 'schedule', icon: '▦', label: 'Расписание' },
+    { id: 'homework', icon: '✓', label: 'Задания' },
+    { id: 'chat', icon: '✉', label: 'Чат' },
+  ];
+  if (isAdmin) navItems.push({ id: 'admin', icon: '♙', label: 'Люди' });
+  navItems.push({ id: 'settings', icon: '⚙', label: 'Настройки' });
+
+  $('#app').innerHTML = `
+    <div class="app">
+      <div class="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-icon">13</div>
+          <div class="brand-text"><h2>МСО</h2><p>Портал группы</p></div>
+        </div>
+        <div class="nav-list">
+          ${navItems.map(n => `<button class="nav-btn ${view === n.id ? 'active' : ''}" onclick="window.setView('${n.id}')"><i>${n.icon}</i> ${n.label}</button>`).join('')}
+        </div>
+        <div class="sidebar-bottom">
+          <div class="user-card">
+            <div class="user-avatar">${esc(profile.name[0])}</div>
+            <div class="user-info"><h4>${esc(profile.name)}</h4><p>${isAdmin ? 'Администратор' : 'Участник'}</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="main"><div class="content">${content}</div></div>
+    </div>
+    <div class="mobile-nav">
+      ${navItems.map(n => `<button class="m-nav-btn ${view === n.id ? 'active' : ''}" onclick="window.setView('${n.id}')"><i>${n.icon}</i> ${n.label}</button>`).join('')}
+    </div>
+  `;
+}
+
+window.setView = v => { view = v; renderApp(); };
+window.doLogout = () => signOut(auth);
+
+window.toggleTheme = () => {
+  const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  state.config.theme = t; save();
+};
+
+window.exportICS = () => {
+  if(!state || !state.homework.length) return toast('Нет заданий для экспорта', 'error');
+  let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//13 MSO//RU\n";
+  state.homework.forEach(hw => {
+    if (hw.dueDate) {
+      const date = hw.dueDate.replace(/-/g, '');
+      ics += "BEGIN:VEVENT\n";
+      ics += `SUMMARY:${hw.subject}: ${hw.title}\n`;
+      ics += `DESCRIPTION:${hw.description || 'Задание'}\n`;
+      ics += `DTSTART;VALUE=DATE:${date}\nDTEND;VALUE=DATE:${date}\n`;
+      ics += "BEGIN:VALARM\nTRIGGER:-PT2H\nACTION:DISPLAY\nDESCRIPTION:Напоминание\nEND:VALARM\nEND:VEVENT\n";
+    }
+  });
+  ics += "END:VCALENDAR";
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+  a.download = '13-MSO-задания.ics'; a.click();
+  toast('Календарь скачан!');
+};
+
+window.reqNotif = () => {
+  if (!("Notification" in window)) return toast('Нет поддержки уведомлений', 'error');
+  Notification.requestPermission().then(p => { if (p === 'granted') toast('Уведомления включены!'); });
+};
+
+window.addScheduleModal = () => {
+  openModal(`
+    <div class="modal-header"><h3>Новое занятие</h3><button class="close-btn" onclick="window.closeModal()">✕</button></div>
+    <div class="input-group"><label>Предмет</label><input type="text" id="sch-subj" class="input" placeholder="Например, Анатомия"></div>
+    <div class="input-group"><label>Дата</label><input type="date" id="sch-date" class="input"></div>
+    <div class="input-group"><label>Время</label><input type="text" id="sch-time" class="input" placeholder="09:00 - 10:30"></div>
+    <div class="input-group"><label>Аудитория</label><input type="text" id="sch-room" class="input" placeholder="Ауд. 204"></div>
+    <button class="btn btn-primary" onclick="window.saveSchedule()">Сохранить</button>
+  `);
+};
+window.saveSchedule = () => {
+  const subj = $('#sch-subj').value; const date = $('#sch-date').value; const time = $('#sch-time').value; const room = $('#sch-room').value;
+  if(!subj || !date || !time) return toast('Заполните все поля', 'error');
+  state.schedule.push({ id: uid('sch'), subject: subj, date, time, room });
+  save(); closeModal(); toast('Занятие добавлено');
+};
+window.delSchedule = id => { state.schedule = state.schedule.filter(x => x.id !== id); save(); };
+
+window.addHomeworkModal = () => {
+  openModal(`
+    <div class="modal-header"><h3>Новое задание</h3><button class="close-btn" onclick="window.closeModal()">✕</button></div>
+    <div class="input-group"><label>Название задания</label><input type="text" id="hw-title" class="input" placeholder="Например, Прочитать параграф"></div>
+    <div class="input-group"><label>Предмет</label><input type="text" id="hw-subj" class="input" placeholder="Биология"></div>
+    <div class="input-group"><label>Срок сдачи</label><input type="date" id="hw-date" class="input"></div>
+    <div class="input-group"><label>Описание</label><textarea id="hw-desc" class="input" placeholder="Детали задания..." rows="3"></textarea></div>
+    <div class="input-group"><label>Приоритет</label><select id="hw-priority" class="input"><option value="normal">Обычное</option><option value="high">Важное</option></select></div>
+    <button class="btn btn-primary" onclick="window.saveHomework()">Добавить</button>
+  `);
+};
+window.saveHomework = () => {
+  const title = $('#hw-title').value; const subj = $('#hw-subj').value; const date = $('#hw-date').value; const desc = $('#hw-desc').value; const prio = $('#hw-priority').value;
+  if(!title || !date) return toast('Заполните название и дату', 'error');
+  state.homework.push({ id: uid('hw'), title, subject: subj || 'Общее', dueDate: date, description: desc, priority: prio, done: false });
+  save(); closeModal(); toast('Задание добавлено');
+};
+window.toggleHw = id => { const hw = state.homework.find(x => x.id === id); if(hw) { hw.done = !hw.done; save(); } };
+window.delHw = id => { state.homework = state.homework.filter(x => x.id !== id); save(); };
+
+window.sendChat = () => {
+  const inp = $('#chat-input'); const txt = inp.value.trim();
+  if(!txt) return;
+  if(!state.chat) state.chat = [];
+  state.chat.push({ id: uid('m'), text: txt, authorId: user.uid, authorName: profile.name, time: new Date().toISOString() });
+  save(); inp.value = '';
+};
+
+window.generateInvite = (role) => {
+  const code = 'MSO-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+  state.invitations.push({ code, role, used: false });
+  save();
+  openModal(`
+    <div class="modal-header"><h3>Код приглашения</h3><button class="close-btn" onclick="window.closeModal()">✕</button></div>
+    <p style="font-size:15px; margin-bottom:20px;">Отправьте этот код. После регистрации пользователь получит роль: <b>${role === 'admin' ? 'Администратор' : 'Студент'}</b>.</p>
+    <div style="background:var(--primary-soft); color:var(--primary); padding:24px; border-radius:16px; text-align:center; font-size:28px; font-weight:900; letter-spacing:4px; margin-bottom:24px; border: 2px dashed var(--primary);">${code}</div>
+    <button class="btn btn-primary" onclick="window.closeModal()">Готово</button>
+  `);
+};
+
+onAuthStateChanged(auth, (u) => {
+  user = u;
+  if (user) { initDB(); } 
+  else { if(unsub) unsub(); profile = null; renderAuth(); }
+});
+</script>
+</body>
+</html>
